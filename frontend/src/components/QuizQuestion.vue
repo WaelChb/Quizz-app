@@ -1,7 +1,8 @@
 <!-- src/components/QuizQuestion.vue -->
 <template>
-  <div class="quiz-container" v-if="quiz || showFinalScore">
-    <div class="question-card" v-if="quiz">
+  <div class="quiz-container">
+    <!-- Si le quiz existe et que le score final n'est pas encore affiché -->
+    <div v-if="quiz && !showFinalScore" class="question-card">
       <h2 class="question-text">{{ quiz.question }}</h2>
       <ul class="options-list">
         <li
@@ -29,7 +30,9 @@
         {{ feedbackMessage }}
       </p>
     </div>
-    <div class="final-score-card" v-else>
+
+    <!-- Si toutes les questions sont répondues, affiche le score final -->
+    <div v-else-if="showFinalScore" class="final-score-card">
       <h2>Quiz terminé!</h2>
       <p>
         Vous avez répondu correctement à {{ score }} questions sur
@@ -38,6 +41,11 @@
       <button class="submit-button" @click="restartQuiz">
         Recommencer le quiz
       </button>
+    </div>
+
+    <!-- Message d'erreur s'il n'y a pas de quiz à afficher -->
+    <div v-else class="error-message">
+      <p>Aucun quiz disponible ou erreur de chargement des données.</p>
     </div>
   </div>
 </template>
@@ -68,7 +76,11 @@ export default {
         .then((response) => {
           this.quizzes = response.data;
           this.totalQuestions = this.quizzes.length;
-          this.loadRandomQuiz();
+          if (this.totalQuestions > 0) {
+            this.loadRandomQuiz();
+          } else {
+            console.error("Aucun quiz trouvé.");
+          }
         })
         .catch((error) => {
           console.error("Erreur lors de la récupération des quiz :", error);
