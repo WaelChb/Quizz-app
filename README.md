@@ -98,6 +98,28 @@ Utilisation de l'application
 Ouvrez votre navigateur et accédez à http://localhost:8080.
 Répondez aux questions du quiz et obtenez votre score à la fin!
 
-```
+Étapes pour ajouter des quiz :
+Accédez au répertoire backend :
 
+```bash
+cd backend
 ```
+Exécutez le script de seeding :
+
+Le script seed.js va insérer des questions de quiz prédéfinies dans la base de données. Vous pouvez exécuter ce script avec la commande suivante :
+
+```bash
+node seed.js
+```
+Cette commande va ajouter les quiz à la base de données SQLite utilisée par le backend.
+
+Vérifiez les données :
+
+Après avoir exécuté le script de seeding, vous pouvez vérifier que les quiz ont été correctement ajoutés en accédant à l'API de quiz via votre navigateur ou un outil comme Postman.
+
+Ouvrez votre navigateur et accédez à l'URL suivante pour voir la liste des quiz :
+
+```bash
+http://localhost:5000/api/quizzes
+```
+Si les quiz apparaissent dans le navigateur ou l'outil API, cela signifie que le script de seeding a fonctionné correctement.
