@@ -42,10 +42,10 @@ Cette application de quiz propose des questions aléatoires et affiche le score 
 
 1. **Clonez le dépôt**
 
-   ```bash
-   git clone https://github.com/WaelChb/Quizz-app
-   cd quiz-app
-   ```
+```bash
+git clone https://github.com/WaelChb/Quizz-app
+cd quiz-app
+```
 
    2. Installez les dépendances du backend
 
