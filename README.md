@@ -74,7 +74,7 @@ cd backend
 Lancez le serveur backend.
 
 ```bash
-npm start
+node index.js
 ```
 
 Le backend devrait être accessible à l'adresse http://localhost:5000.
