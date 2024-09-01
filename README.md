@@ -9,8 +9,7 @@ Cette application de quiz est construite avec un backend en Node.js et un fronte
 - [Technologies Utilisées](#technologies-utilisées)
 - [Installation](#installation)
 - [Utilisation](#utilisation)
-- [Contribuer](#contribuer)
-- [Licence](#licence)
+
 
 ## Aperçu
 
