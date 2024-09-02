@@ -122,7 +122,7 @@ Après avoir exécuté le script de seeding, vous pouvez vérifier que les quiz 
 Ouvrez votre navigateur et accédez à l'URL suivante pour voir la liste des quiz :
 
 ```bash
-http://localhost:5000/api/quizzes
+http://localhost:5000/quizzes
 ```
 
 Si les quiz apparaissent dans le navigateur ou l'outil API, cela signifie que le script de seeding a fonctionné correctement.
