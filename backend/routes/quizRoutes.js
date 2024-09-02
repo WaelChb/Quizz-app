@@ -17,15 +17,14 @@ router.post("/quizzes", async (req, res) => {
 
 // Lire tous les quiz
 router.get("/quizzes", async (req, res) => {
-  const category = req.query.category; // Récupérer la catégorie depuis les paramètres de requête
   try {
-    const quizzes = await Quiz.find({ category }); // Utiliser la catégorie pour filtrer les quizzes
-    res.json(quizzes);
+    const quizzes = await Quiz.find({});
+    res.send(quizzes);
   } catch (error) {
-    console.error("Erreur lors de la récupération des quizzes :", error);
-    res.status(500).send("Erreur du serveur");
+    res.status(500).send();
   }
 });
+
 // Lire un quiz par ID
 router.get("/quizzes/:id", async (req, res) => {
   try {

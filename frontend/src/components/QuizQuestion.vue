@@ -88,9 +88,7 @@ export default {
   methods: {
     fetchQuizzes(category) {
       axios
-        .get(
-          `https://quizz-app-a23c.onrender.com/api/quizzes?category=${category}`
-        )
+        .get(`http://localhost:5000/api/quizzes?category=${category}`)
         .then((response) => {
           this.quizzes = response.data;
           this.totalQuestions = this.quizzes.length; // Assurez-vous que ce nombre est correct
