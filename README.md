@@ -10,7 +10,6 @@ Cette application de quiz est construite avec un backend en Node.js et un fronte
 - [Installation](#installation)
 - [Utilisation](#utilisation)
 
-
 ## Aperçu
 
 Cette application de quiz propose des questions aléatoires et affiche le score de l'utilisateur à la fin. L'utilisateur peut répondre aux questions et recevoir un feedback instantané sur la réponse soumise. Après avoir répondu à toutes les questions, le score final est affiché, et l'utilisateur peut recommencer le quiz.
@@ -46,7 +45,7 @@ git clone https://github.com/WaelChb/Quizz-app
 cd quiz-app
 ```
 
-   2. Installez les dépendances du backend
+2.  Installez les dépendances du backend
 
 ```bash
 cd backend
@@ -93,7 +92,8 @@ npm run serve
 
 Le frontend devrait être accessible à l'adresse http://localhost:8080.
 
-Utilisation de l'application
+## Utilisation de l'application
+
 Ouvrez votre navigateur et accédez à http://localhost:8080.
 Répondez aux questions du quiz et obtenez votre score à la fin!
 
@@ -103,6 +103,7 @@ Accédez au répertoire backend :
 ```bash
 cd backend
 ```
+
 Exécutez le script de seeding :
 
 Le script seed.js va insérer des questions de quiz prédéfinies dans la base de données. Vous pouvez exécuter ce script avec la commande suivante :
@@ -110,6 +111,7 @@ Le script seed.js va insérer des questions de quiz prédéfinies dans la base d
 ```bash
 node seed.js
 ```
+
 Cette commande va ajouter les quiz à la base de données SQLite utilisée par le backend.
 
 Vérifiez les données :
@@ -121,4 +123,5 @@ Ouvrez votre navigateur et accédez à l'URL suivante pour voir la liste des qui
 ```bash
 http://localhost:5000/api/quizzes
 ```
+
 Si les quiz apparaissent dans le navigateur ou l'outil API, cela signifie que le script de seeding a fonctionné correctement.
