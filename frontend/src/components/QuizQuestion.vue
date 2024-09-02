@@ -1,59 +1,76 @@
-<!-- src/components/QuizQuestion.vue -->
 <template>
-  <div class="quiz-container">
-    <!-- Si le quiz existe et que le score final n'est pas encore affiché -->
-    <div v-if="quiz && !showFinalScore" class="question-card">
-      <h2 class="question-text">{{ quiz.question }}</h2>
-      <ul class="options-list">
-        <li
-          class="option-item"
-          v-for="(option, index) in quiz.options"
-          :key="index"
+  <div>
+    <!-- Composant de sélection de catégorie -->
+    <CategorySelection
+      @categorySelected="handleCategorySelected"
+      v-if="!quizStarted && !showFinalScore"
+    />
+
+    <!-- Affiche les questions du quiz -->
+    <div class="quiz-container" v-if="quizStarted && quiz && !showFinalScore">
+      <div class="question-card">
+        <h2 class="question-text">{{ quiz.question }}</h2>
+        <ul class="options-list">
+          <li
+            class="option-item"
+            v-for="(option, index) in quiz.options"
+            :key="index"
+          >
+            <div class="container">
+              <label>
+                <input
+                  name="e"
+                  type="radio"
+                  :value="option"
+                  v-model="selectedAnswer"
+                />
+                {{ option }}
+              </label>
+            </div>
+          </li>
+        </ul>
+        <button
+          class="submit-button"
+          @click="submitAnswer"
+          :disabled="isSubmitting"
         >
-          <div class="container">
-            <label>
-              <input
-                name="e"
-                type="radio"
-                :value="option"
-                v-model="selectedAnswer"
-              />
-              {{ option }}
-            </label>
-          </div>
-        </li>
-      </ul>
-      <button class="submit-button" @click="submitAnswer">
-        Soumettre la réponse
-      </button>
-      <p class="feedback-message" v-if="feedbackMessage">
-        {{ feedbackMessage }}
-      </p>
+          Soumettre la réponse
+        </button>
+        <p
+          :class="feedbackClass"
+          class="feedback-message"
+          v-if="feedbackMessage"
+        >
+          {{ feedbackMessage }}
+        </p>
+      </div>
     </div>
 
     <!-- Si toutes les questions sont répondues, affiche le score final -->
-    <div v-else-if="showFinalScore" class="final-score-card">
-      <h2>Quiz terminé!</h2>
-      <p>
-        Vous avez répondu correctement à {{ score }} questions sur
-        {{ totalQuestions }}.
-      </p>
-      <button class="submit-button" @click="restartQuiz">
-        Recommencer le quiz
-      </button>
-    </div>
-
-    <!-- Message d'erreur s'il n'y a pas de quiz à afficher -->
-    <div v-else class="error-message">
-      <p>Aucun quiz disponible ou erreur de chargement des données.</p>
+    <div v-else-if="showFinalScore" class="final-score-container">
+      <div class="final-score-card">
+        <h2>Quiz terminé!</h2>
+        <p>
+          Vous avez répondu correctement à {{ score }} questions sur
+          {{ totalQuestions }}.
+        </p>
+        <br />
+        <button class="submit-button" @click="restartQuiz">
+          Recommencer le quiz
+        </button>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import axios from "axios";
+import CategorySelection from "./CategorySelection.vue"; // Importer le composant de sélection de catégorie
 
 export default {
+  components: {
+    CategorySelection,
+  },
   data() {
     return {
       quizzes: [], // Liste de tous les quiz
@@ -61,37 +78,36 @@ export default {
       selectedAnswer: "", // Réponse sélectionnée par l'utilisateur
       feedbackMessage: "", // Message de feedback après la soumission de la réponse
       answeredQuestions: new Set(), // Questions déjà répondues
-      score: 0, // Score actuel
+      quizStarted: false, // État pour savoir si le quiz a commencé
+      score: 0, // Score de l'utilisateur
       totalQuestions: 0, // Nombre total de questions
       showFinalScore: false, // Indique si le score final doit être affiché
+      isSubmitting: false,
     };
   },
-  created() {
-    this.fetchQuizzes();
-  },
   methods: {
-    fetchQuizzes() {
+    fetchQuizzes(category) {
       axios
-        .get("http://localhost:5000/api/quizzes")
+        .get(`http://localhost:5000/api/quizzes?category=${category}`)
         .then((response) => {
           this.quizzes = response.data;
-          this.totalQuestions = this.quizzes.length;
+          this.totalQuestions = this.quizzes.length; // Assurez-vous que ce nombre est correct
           if (this.totalQuestions > 0) {
             this.loadRandomQuiz();
           } else {
-            console.error("Aucun quiz trouvé.");
+            console.error("Aucun quiz trouvé pour cette catégorie.");
           }
         })
         .catch((error) => {
           console.error("Erreur lors de la récupération des quiz :", error);
         });
     },
+
     loadRandomQuiz() {
       if (this.answeredQuestions.size === this.quizzes.length) {
         this.showFinalScore = true; // Affiche le score final lorsque toutes les questions sont répondues
         return;
       }
-
       let randomIndex;
       do {
         randomIndex = Math.floor(Math.random() * this.quizzes.length);
@@ -103,23 +119,41 @@ export default {
       this.feedbackMessage = ""; // Réinitialise le message de feedback
     },
     submitAnswer() {
+      if (this.isSubmitting) return; // Ignore les clics si une soumission est en cours
+
       if (this.selectedAnswer) {
+        this.isSubmitting = true; // Indique qu'une soumission est en cours
+
         if (this.selectedAnswer === this.quiz.correctAnswer) {
           this.feedbackMessage = "Bonne réponse!";
-          this.score++; // Incrémente le score pour une bonne réponse
+          this.feedbackClass = "feedback-correct"; // Classe CSS pour les réponses correctes
+          this.score++; // Incrémente le score pour chaque bonne réponse
         } else {
           this.feedbackMessage = `Mauvaise réponse! La bonne réponse était: ${this.quiz.correctAnswer}.`;
+          this.feedbackClass = "feedback-incorrect"; // Classe CSS pour les réponses incorrectes
         }
-        setTimeout(this.loadRandomQuiz, 2000); // Charge une nouvelle question après 2 secondes
+
+        setTimeout(() => {
+          this.loadRandomQuiz();
+          this.isSubmitting = false; // Réinitialise l'état de soumission après le chargement de la question suivante
+        }, 2000); // Charge une nouvelle question après 2 secondes
       } else {
         this.feedbackMessage = "Veuillez sélectionner une réponse.";
+        this.feedbackClass = ""; // Aucune classe CSS pour les erreurs de sélection
       }
     },
+    handleCategorySelected(category) {
+      this.quizStarted = true; // Le quiz commence
+      this.fetchQuizzes(category); // Charge les quiz de la catégorie sélectionnée
+    },
     restartQuiz() {
-      this.answeredQuestions.clear(); // Réinitialise les questions répondues
+      // Réinitialise les variables pour recommencer le quiz
+      this.answeredQuestions.clear(); // Réinitialise les questions déjà répondues
       this.score = 0; // Réinitialise le score
       this.showFinalScore = false; // Cache le score final
-      this.loadRandomQuiz(); // Charge une nouvelle question
+      this.quizStarted = false; // Revenir à la sélection de la catégorie
+      this.quiz = null; // Réinitialiser le quiz actuel
+      this.feedbackMessage = ""; // Réinitialiser le message de feedback
     },
   },
 };
@@ -134,9 +168,33 @@ export default {
   background-color: #f4f4f9;
   padding: 20px;
 }
+.final-score-container {
+  display: flex;
+  justify-content: center; /* Centre horizontalement */
+  align-items: center; /* Centre verticalement */
+  height: 100vh; /* Prend toute la hauteur de la fenêtre */
+  background-color: #b8b5b5;
+}
 
-.question-card,
 .final-score-card {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+  animation: fadeIn 0.5s ease-in-out;
+}
+.feedback-correct {
+  color: green;
+}
+
+.feedback-incorrect {
+  color: red;
+}
+
+.question-card {
   background-color: #fff;
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -281,7 +339,6 @@ export default {
   font-weight: bold;
   margin-top: 20px;
   font-size: 1.2em;
-  color: #d32f2f;
 }
 
 @keyframes fadeIn {
