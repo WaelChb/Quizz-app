@@ -61,7 +61,8 @@ cd frontend
 npm install
 ```
 
-Utilisation
+## Utilisation
+
 Lancer le Backend
 Accédez au répertoire backend dans votre terminal.
 
